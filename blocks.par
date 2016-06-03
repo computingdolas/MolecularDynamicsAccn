@@ -1,0 +1,10 @@
+part_input_file blocks.in
+timestep_length 0.005
+time_end 2.0
+epsilon 1.0
+sigma 1.
+part_out_freq 100
+part_out_name_base blocks_
+vtk_out_freq 2
+vtk_out_name_base blocks_
+cl_workgroup_1dsize 128
