@@ -50,10 +50,10 @@ int main(int argc, const char * argv[]) {
     cudaDeviceBuffer<real_d> velocity(numparticles,PhysicalQuantity::Vector) ;
     cudaDeviceBuffer<real_d> forceold(numparticles,PhysicalQuantity::Vector) ;
     cudaDeviceBuffer<real_d> forcenew(numparticles,PhysicalQuantity::Vector) ;
-    cudaDeviceBuffer<real_l> cell_list(numcells,PhysicalQuantity::Scalar);
-    cudaDeviceBuffer<real_l> particle_list(numparticles,PhysicalQuantity::Scalar);
+    //cudaDeviceBuffer<real_l> cell_list(numcells,PhysicalQuantity::Scalar);
+    //cudaDeviceBuffer<real_l> particle_list(numparticles,PhysicalQuantity::Scalar);
     cudaDeviceBuffer<real_d> const_args(9,PhysicalQuantity::Scalar);
-    cudaDeviceBuffer<real_l> num_cells(3,PhysicalQuantity::Scalar);
+    //cudaDeviceBuffer<real_l> num_cells(3,PhysicalQuantity::Scalar);
     cudaDeviceBuffer<real_l> neighbour_list(numparticles*numparticles,PhysicalQuantity::Scalar);
 
     //Initiliazing the buffers for mass,velocity and position
@@ -71,9 +71,9 @@ int main(int argc, const char * argv[]) {
     const_args[8] = len_z;
 
     //Number of cells per dimension
-    num_cells[0] = xn;
-    num_cells[1] = yn;
-    num_cells[2] = zn;
+    //num_cells[0] = xn;
+    //num_cells[1] = yn;
+    //num_cells[2] = zn;
 
     // Allocating memory on Device
     mass.allocateOnDevice();
@@ -81,10 +81,10 @@ int main(int argc, const char * argv[]) {
     velocity.allocateOnDevice();
     forceold.allocateOnDevice();
     forcenew.allocateOnDevice();
-    cell_list.allocateOnDevice();
-    particle_list.allocateOnDevice();
+   // cell_list.allocateOnDevice();
+   // particle_list.allocateOnDevice();
     const_args.allocateOnDevice();
-    num_cells.allocateOnDevice();
+   // num_cells.allocateOnDevice();
     neighbour_list.allocateOnDevice();
 
     //Copy to Device
@@ -93,10 +93,10 @@ int main(int argc, const char * argv[]) {
     velocity.copyToDevice();
     forceold.copyToDevice();
     forcenew.copyToDevice();
-    cell_list.copyToDevice();
-    particle_list.copyToDevice();
+    //cell_list.copyToDevice();
+    //particle_list.copyToDevice();
     const_args.copyToDevice();
-    num_cells.copyToDevice();
+    //num_cells.copyToDevice();
     neighbour_list.copyToDevice();
 
     VTKWriter writer(vtk_name) ;
@@ -117,9 +117,8 @@ int main(int argc, const char * argv[]) {
         real_l iter = 0 ;
         //calculate Initial forces
         formNeighbourList<<<num_blocks,threads_per_blocks>>>(neighbour_list.devicePtr,position.devicePtr,const_args.devicePtr,numparticles,r_cut);
-        calcForcesNeighbourList<<<num_blocks ,threads_per_blocks>>>(forcenew.devicePtr,neighbour_list.devicePtr,numparticles,\
-                                                             const_args.devicePtr,position.devicePtr,sigma,epsilon);
-
+       	 calcForcesNeighbourList<<<num_blocks ,threads_per_blocks>>>(forcenew.devicePtr,neighbour_list.devicePtr,numparticles, const_args.devicePtr,position.devicePtr,sigma,epsilon);
+	
         for(real_d t =0.0 ; t < time_end ; t+= timestep_length ) {
             time.reset();
 
@@ -154,9 +153,8 @@ int main(int argc, const char * argv[]) {
             // Iterator count
             ++iter ;
         }
-
-    }
-
+	
+    }	
     std::cout<<"The time taken for "<<numparticles<<" is:= "<<time_taken<<std::endl ;
 
     return 0;

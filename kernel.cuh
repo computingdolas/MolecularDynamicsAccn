@@ -512,6 +512,9 @@ __global__ void calcForcesNeighbourList(real_d *force, const real_l * neighbourL
     real_l idx = threadIdx.x + blockIdx.x * blockDim.x;
 
     if(idx < numParticles){
+	
+	// Index in the neighbour list for the following particle 
+	real_l nidx = idx * numParticles ; 
 
         // Relative Vector
         real_d relativeVector[3] = {0.0,0.0,0.0} ;
@@ -532,13 +535,13 @@ __global__ void calcForcesNeighbourList(real_d *force, const real_l * neighbourL
 
         //Index of particle calculating the forces due to other particles
         real_l vidxp = idx * 3 ;
-
+	
         // Traverse the neighbour list uptill this particle encounter itself
-        {
+        
 
             // Declaring the iterator
-            real_l i = 0 ;
-            while (neighbourList[i] != idx){
+            //real_l i = 0 ;
+            for(real_l i = nidx; neighbourList[i]!=idx;++i ) {
 
                 // Find out the index of particle in the particle array
                 real_l vidxn = neighbourList[i] * 3 ;
@@ -560,9 +563,9 @@ __global__ void calcForcesNeighbourList(real_d *force, const real_l * neighbourL
                 force[vidxp+2] +=  forceVector[2]  ;
 
                 // Increase the iterator ..
-                ++i ;
+                //++i ;
             }
-        }
+        
     }
 }
 
